@@ -65,7 +65,7 @@ class QwenLLM:
         messages = history
         prompt = self.get_prompt(material[0],material[1],material[2],input)
         messages.append({'role':'user','content':prompt})
-        print(messages)
+        # print(messages)
         response = Generation.call(model="qwen-turbo",
                                 messages=messages,
                                 # 将输出设置为"message"格式
@@ -79,6 +79,28 @@ class QwenLLM:
                 response.code, response.message
             ))
             return response.message
+        
+    def in_temp_call(self, input: str,material:List, history:List) -> str:
+        messages = history
+        prompt = self.get_prompt(material[0][0]['doc']+material[0][1]['doc'],
+                                 material[1][0]['doc']+material[1][1]['doc'],
+                                 material[2][0]['doc']+material[2][1]['doc'],input)
+        messages.append({'role':'user','content':prompt})
+        # print(messages)
+        response = Generation.call(model="qwen-turbo",
+                                messages=messages,
+                                # 将输出设置为"message"格式
+                                result_format='message')
+        if response.status_code == HTTPStatus.OK:
+            # print(response)
+            return response['output'].choices[0].message['content']
+        else:
+            print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+                response.request_id, response.status_code,
+                response.code, response.message
+            ))
+            return response.message
+
 
 
         
