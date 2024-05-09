@@ -13,7 +13,8 @@ from tqdm import tqdm
 import tenacity
 from tqdm.asyncio import tqdm_asyncio
 
-# Edit from translate import Translator
+# 修改自 codingClaire / access-arxiv-paperlist 库
+# 改进 限制速度，并发+重试，边缘情况处理
 @tenacity.retry(wait=tenacity.wait_exponential(multiplier=2, min=4, max=10),
                     stop=tenacity.stop_after_attempt(5),
                     reraise=True)
@@ -54,7 +55,6 @@ async def accessMonthlyPaper(data_dir, categories, months):
                 soup = BeautifulSoup(html, features="html.parser")
                 print("Got First Page")
                 print("access to "+ url)
-                # get the url that contains all paper in the specific category and month
                 numofpaper = int(re.findall(r'total of (\d+) entries:',soup.findAll("small")[0].text)[0])
                 print("This Term Has Paper Num of "+str(numofpaper))
                 if (numofpaper > 25 and numofpaper <= 2000):

@@ -7,7 +7,9 @@ import dashscope
 from dashscope import Generation
 import random
 
-dashscope.api_key = "sk-dc5d6a75508645be9a03c511a396d909"
+load_dotenv()
+dashscope.api_key = os.getenv("DASHSCOPE_API_KEY")
+
 def build_template():
         prompt_template = "You are an accurate and reliable AI assistant able to answer user questions with the help of external documentation, be aware that external documentation may contain noisy factual errors." \
                         "If the information in the document contains the correct answer, you will answer accurately."\
@@ -21,7 +23,7 @@ def build_template():
                         "{}\n" \
                         "Here's the third external documentation:" \
                         "{}\n" \
-                        "用户问题：\n---" \
+                        "user question：\n---" \
                         "{}\n"
         return prompt_template
     
@@ -46,9 +48,6 @@ class QwenLLM:
             model='qwen-turbo',
             prompt=prompt_text
         )
-        # The response status_code is HTTPStatus.OK indicate success,
-        # otherwise indicate request is failed, you can get error code
-        # and message from code and message.
         if resp.status_code == HTTPStatus.OK:
             return resp.output.text  # The output text
             # print(resp.usage)  # The usage information
@@ -105,9 +104,5 @@ class QwenLLM:
 
         
 if __name__ == "__main__":
-    # env_path = Path('.') / '.env'
-    # load_dotenv(dotenv_path=env_path, verbose=True)
-    # DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
-    
     llm = QwenLLM()
     print(llm.sample_sync_call("Hello!"))

@@ -55,11 +55,7 @@ class pdfLoader:
     async def download_file(self, url_of_file, name, number_of_threads):
         async with aiohttp.ClientSession() as session:
             r = await session.head(url_of_file)
-            if name:
-                file_name = name
-            else:
-                file_name = url_of_file.split('/')[-1]
-
+            file_name = name
             try:
                 file_size = int(r.headers['Content-Length'])
             except:

@@ -20,8 +20,6 @@ class mainPdfReader:
             words = text.split("\n")
             for idx, word in enumerate(words):
                 text = word.strip().strip("\n")
-                if("...................." in text or "目录" in text):
-                    continue
                 if(len(text) < 1):
                     continue
                 if("! !" in text):
@@ -34,12 +32,13 @@ class mainPdfReader:
             all_content = all_content + page_content
         return all_content
     
+    # 语义分句
     def Sentence_By_NLTK(self,text):
         sentences = nltk.sent_tokenize(text)
         return sentences
     
+    # 仓库 dawoshi/Tianchi-LLM-QA 滑窗方法
     def SlidingWindow(self, sentences, kernel = 512, stride = 1):
-        # sz = len(sentences)
         cur = ""
         fast = 0
         slow = 0
@@ -59,7 +58,7 @@ class mainPdfReader:
     
 
 if __name__ == "__main__":
-    rd = mainPdfReader(r"G:\1ALPFtask\One_Month_Paper\utils\pdfs\2404.10981v1.pdf")
+    rd = mainPdfReader(r"/root/autodl-tmp/One_Month_Paper/tmp/2401.14887.pdf")
     text = rd.Extract_RawText()
     sentences = rd.Split_By_NLTK(text)
     print(sentences)

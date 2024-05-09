@@ -16,14 +16,8 @@ class Retriever:
 
 
     def retrieval(self, query, methods=None):
-        # if methods is None:
-        #     methods = ['bm25', 'emb']
         search_res = list()
-        # print(query)
         query_embeddings = self.emb_model.embed_query(query)
-        # print(query_embeddings)
-        # print("The embedding is :" + str(query_embeddings))
-        # print("The dimension is :" + str(len(query_embeddings)))
         search_res = self.collection.query(
             query_embeddings=[query_embeddings],
             n_results=7,
@@ -33,11 +27,7 @@ class Retriever:
     
     def retrieval_in_temp(self,query,methods=None):
         search_res = list()
-        # print(query)
         query_embeddings = self.emb_model.embed_query(query)
-        # print(query_embeddings)
-        # print("The embedding is :" + str(query_embeddings))
-        # print("The dimension is :" + str(len(query_embeddings)))
         search_res = self.temp_collection.query(
             query_embeddings=[query_embeddings],
             n_results=7,

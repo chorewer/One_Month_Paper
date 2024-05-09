@@ -22,7 +22,7 @@ class bgeEmbeddings:
             trust_remote_code=True
         )
         if 'bge' in emb_model_name_or_path:
-            self.DEFAULT_QUERY_BGE_INSTRUCTION_ZH = "为这个句子生成表示以用于检索相关文章："
+            self.DEFAULT_QUERY_BGE_INSTRUCTION_ZH = "Generate a representation for this sentence to retrieve relevant articles:"
         else:
             self.DEFAULT_QUERY_BGE_INSTRUCTION_ZH = ""
         self.emb_model_name_or_path = emb_model_name_or_path
@@ -31,18 +31,7 @@ class bgeEmbeddings:
         self.max_len = max_len
         print("successful load embedding model")
     
-    def compute_kernel_bias(self, vecs, n_components=384):
-        """
-            bertWhitening: https://spaces.ac.cn/archives/8069
-            计算kernel和bias
-            vecs.shape = [num_samples, embedding_size],
-            最后的变换: y = (x + bias).dot(kernel)
-        """
-        mu = vecs.mean(axis=0, keepdims=True)
-        cov = np.cov(vecs.T)
-        u, s, vh = np.linalg.svd(cov)
-        W = np.dot(u, np.diag(1 / np.sqrt(s)))
-        return W[:, :n_components], -mu
+    
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """
@@ -74,10 +63,6 @@ class bgeEmbeddings:
                 batch_embeddings = torch.nn.functional.normalize(batch_embeddings, p=2, dim=1)
                 sentence_embeddings.extend(batch_embeddings.tolist())
 
-        # sentence_embeddings = np.array(sentence_embeddings)
-        # self.W, self.mu = self.compute_kernel_bias(sentence_embeddings)
-        # sentence_embeddings = (sentence_embeddings+self.mu) @ self.W
-        # self.W, self.mu = torch.from_numpy(self.W).cuda(), torch.from_numpy(self.mu).cuda()
         return sentence_embeddings
 
     def embed_query(self, text: str) -> List[float]:
@@ -100,7 +85,17 @@ class bgeEmbeddings:
             # Perform pooling. In this case, cls pooling.
             sentence_embeddings = model_output[0][:, 0]
         sentence_embeddings = torch.nn.functional.normalize(sentence_embeddings, p=2, dim=1)
-        # sentence_embeddings = (sentence_embeddings + self.mu) @ self.W
         return sentence_embeddings[0].tolist()
 
-    
+    # def compute_kernel_bias(self, vecs, n_components=384):
+    #     """
+    #         bertWhitening: https://spaces.ac.cn/archives/8069
+    #         计算kernel和bias
+    #         vecs.shape = [num_samples, embedding_size],
+    #         最后的变换: y = (x + bias).dot(kernel)
+    #     """
+    #     mu = vecs.mean(axis=0, keepdims=True)
+    #     cov = np.cov(vecs.T)
+    #     u, s, vh = np.linalg.svd(cov)
+    #     W = np.dot(u, np.diag(1 / np.sqrt(s)))
+    #     return W[:, :n_components], -mu
