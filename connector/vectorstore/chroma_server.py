@@ -14,6 +14,9 @@ class arXivDB:
         self.collection = self.client.get_or_create_collection(
             name="ARXIV"
         )
+        self.tempClient = chromadb.Client()
+        self.tempCollection = self.tempClient.create_collection(name="temp_collection")
+        
         print("the collection scaled in :" + str(self.collection.count()))
     
     

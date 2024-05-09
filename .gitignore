@@ -168,3 +168,4 @@ arxiv_get/2401_until_240426/
 /test
 .vscode
 /connector/vectorstore/chromadb_data
+/tmp

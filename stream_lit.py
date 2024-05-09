@@ -3,12 +3,14 @@ import numpy as np
 from connector.llm.llm_online import QwenLLM
 from core.retriever import Retriever
 from core.reranker import Reranker
+from utils.onlineloader import pdfLoader
 
 st.title('🏁 Qwen Import Rag')
 
 client = QwenLLM()
 retriver = Retriever()
 reranker = Reranker()
+online = pdfLoader(retriver.db,retriver.emb_model)
 
 # with st.sidebar:
 #     if st.button("Home"):
