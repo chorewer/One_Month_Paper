@@ -59,6 +59,41 @@ class QwenLLM:
         content = self.prompt_template.format(context_1,context_2,context_3, query)
 
         return content
+    def simple_call_without_history(self,sys_msg:str = "You are a helpful assitant.",input:str="") -> str:
+        messages = [{'role': 'system', 'content': sys_msg},
+                {'role': 'user', 'content': input}]
+        response = Generation.call(model="qwen-turbo",
+                                messages=messages,
+                                # 将输出设置为"message"格式
+                                result_format='message')
+        if response.status_code == HTTPStatus.OK:
+            # print(response)
+            return response['output'].choices[0].message['content']
+        else:
+            print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+                response.request_id, response.status_code,
+                response.code, response.message
+            ))
+            return response.message
+        
+    def simple_call(self,sys_msg:str = "You are a helpful assitant.",input:str = "",history:List = []) -> str:
+        messages = [{'role': 'system', 'content': sys_msg}]
+        if history.count > 0:
+            messages = history
+        messages.append({'role': 'user', 'content': input})
+        response = Generation.call(model="qwen-turbo",
+                                messages=messages,
+                                # 将输出设置为"message"格式
+                                result_format='message')
+        if response.status_code == HTTPStatus.OK:
+            # print(response)
+            return response['output'].choices[0].message['content']
+        else:
+            print('Request id: %s, Status code: %s, error code: %s, error message: %s' % (
+                response.request_id, response.status_code,
+                response.code, response.message
+            ))
+            return response.message
     
     def _call(self, input: str,material:List, history:List) -> str:
         messages = history

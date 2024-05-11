@@ -14,7 +14,24 @@ class Retriever:
         self.collection = self.db.collection
         self.temp_collection = self.db.tempCollection
 
-
+    def retrieval_with_paras(
+        self,
+        query:str,
+        topk:int,
+    ):
+        search_res = list()
+        query_embeddings = self.emb_model.embed_query(query)
+        search_res = self.collection.query(
+            query_embeddings=[query_embeddings],
+            n_results=topk,
+        )
+        result = [{
+            "ids": search_res["ids"][0][i], 
+            "meta": search_res["metadatas"][0][i], 
+            "doc": search_res["documents"][0][i]} 
+                  for i in range(len(search_res["ids"][0]))
+            ]
+        return result
     def retrieval(self, query, methods=None):
         search_res = list()
         query_embeddings = self.emb_model.embed_query(query)

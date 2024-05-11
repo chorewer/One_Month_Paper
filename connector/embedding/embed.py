@@ -22,9 +22,9 @@ class bgeEmbeddings:
             trust_remote_code=True
         )
         if 'bge' in emb_model_name_or_path:
-            self.DEFAULT_QUERY_BGE_INSTRUCTION_ZH = "Generate a representation for this sentence to retrieve relevant articles:"
+            self.DEFAULT_QUERY_BGE_INSTRUCTION_EN = "Generate a representation for this sentence to retrieve relevant articles:"
         else:
-            self.DEFAULT_QUERY_BGE_INSTRUCTION_ZH = ""
+            self.DEFAULT_QUERY_BGE_INSTRUCTION_EN = ""
         self.emb_model_name_or_path = emb_model_name_or_path
         self.device = device
         self.batch_size = batch_size
@@ -75,7 +75,7 @@ class bgeEmbeddings:
         """
         text = text.replace("\n", " ")
         if 'bge' in self.emb_model_name_or_path:
-            encoded_input = self.tokenizer([self.DEFAULT_QUERY_BGE_INSTRUCTION_ZH + text], padding=True,
+            encoded_input = self.tokenizer([self.DEFAULT_QUERY_BGE_INSTRUCTION_EN + text], padding=True,
                                            truncation=True, return_tensors='pt').to(self.device)
         else:
             encoded_input = self.tokenizer([text], padding=True,
