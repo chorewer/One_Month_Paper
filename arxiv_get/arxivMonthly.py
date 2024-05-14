@@ -55,7 +55,11 @@ async def accessMonthlyPaper(data_dir, categories, months):
                 soup = BeautifulSoup(html, features="html.parser")
                 print("Got First Page")
                 print("access to "+ url)
-                numofpaper = int(re.findall(r'total of (\d+) entries:',soup.findAll("small")[0].text)[0])
+                temp1 = soup.findAll('div', class_='paging')[0].text
+                print(temp1)
+                temp = re.findall(r'Total of (\d+) entries',temp1)
+                print(temp)
+                numofpaper = int(re.findall(r'Total of (\d+) entries',soup.findAll('div', class_='paging')[0].text)[0])
                 print("This Term Has Paper Num of "+str(numofpaper))
                 if (numofpaper > 25 and numofpaper <= 2000):
                     allurl = (
@@ -223,6 +227,7 @@ if __name__ == "__main__":
         os.mkdir(args.data_dir)
     if args.operation == "access":
         asyncio.run(accessMonthlyPaper(args.data_dir, args.categories, args.months))
+    # python "arxivMonthly.py" --operation "access" --data_dir "./" --categories cs.AI cs.CL cs.CC cs.CE cs.CG cs.GT cs.CV cs.CY cs.CR cs.DS cs.DB cs.DL cs.DM cs.DC cs.ET cs.FL cs.GL cs.GR cs.AR cs.IT cs.LO cs.LG cs.MS cs.MA cs.MM cs.NI cs.NE cs.NA cs.OS cs.OH cs.PF cs.PL cs.RO cs.SI cs.SE cs.SD cs.SC cs.SY   --months "2402" "2403" "2404"
     elif args.operation == "generate":
         generatePaperList(args.data_dir, args.categories, args.months)
     elif args.operation == "merge":
