@@ -23,12 +23,15 @@ class Pattern:
     
     def intention_recognition():
         pass
+    
+    # 名词 解释 原query => 结果list 
     def make_noun_interpretation(self,query:str)->List:
         template = self.proper_noun_interpretation().format(query)
         result = self.llm.simple_call_without_history(input=template)
         result_list = json.loads(result)
         return result_list
 
+    # 问题提升 => 问题上下文列表
     def query_aug_main(self,query:str):
         query_for_abs_list = self.make_noun_interpretation(query=query)
         context_list = []
@@ -37,6 +40,7 @@ class Pattern:
             context_list.extend(explanation)
         return query_for_abs_list,context_list
     
+    # 名词 的 精确解释 （无历史） 
     def make_precise_explanation(self,query:str):
         context_list = self.make_retrieve_and_rerank(query=query,first_recall=5,last_recall=2)
         context = self.generate_context_num(2,[it['doc'] for it in context_list])
@@ -44,12 +48,15 @@ class Pattern:
         result = self.llm.simple_call_without_history(input=input)
         return result
     
+    # 问题的检索 + 重排 pipeline 
     def make_retrieve_and_rerank(self,query:str,first_recall:int,last_recall:int):
         list = self.retriever.retrieval_with_paras(query=query,topk=first_recall)
         list = self.reranker.rerank(list,query=query,k=last_recall)
         return list
     # list : [["ids":"","meta":"","doc":""]]
 
+    # 以下都是 提示词 template 
+    
     def precise_explanation_template():
         template = "Please provide a answer for this question:{}\n" \
             "Based on the provide context:{}"
