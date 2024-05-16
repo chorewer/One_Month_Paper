@@ -12,17 +12,24 @@ from typing import List
 from connector.llm.llm_online import QwenLLM
 from core.retriever import Retriever
 from core.reranker import Reranker
+from utils.onlineloader.pdfLoader import pdfLoader
 import json
 
 class Pattern:
-    def __init__(self,llm:QwenLLM,retriever:Retriever,reranker:Reranker):
+    def __init__(self,llm:QwenLLM,retriever:Retriever,reranker:Reranker,online: pdfLoader):
         self.llm = llm
         self.retriever = retriever
         self.reranker = reranker
+        self.online = online
         pass
     
-    def intention_recognition():
-        pass
+    def intention_recognition(self,query,history):
+        input_his = []
+        for it in history :
+            input_his.append(it.parseList2ListPiece())
+        template = self.intention_template().format(query)
+        result = self.llm.simple_call(input=template,history=input_his)
+        return result
     
     # 名词 解释 原query => 结果list 
     def make_noun_interpretation(self,query:str)->List:
@@ -55,8 +62,61 @@ class Pattern:
         return list
     # list : [["ids":"","meta":"","doc":""]]
 
-    # 以下都是 提示词 template 
+    #简单 no history 问答 
+    def make_response_no_history(self,query:str,data:list):
+        list_just_doc = [it['doc'] for it in data]
+        context = self.generate_context_num(list_just_doc.count,list_just_doc)
+        prompt = self.baseline_template().format(query,context)
+        result = self.llm.simple_call_without_history(input = prompt)
+        return result
     
+    #简单带历史 history 问答
+    def make_response_history(self,query:str,data:list,history,rag:bool):
+        list_just_doc = [it['doc'] for it in data]
+        context = ""
+        if len(list_just_doc) > 0:
+            context = self.generate_context_num(list_just_doc.count,list_just_doc)
+        
+        # context = ""
+        # if len(list_just_doc) > 0:
+        #     context = self.generate_context_num(list_just_doc.count,list_just_doc)  
+        prompt = self.baseline_template().format(query,context)
+        print(prompt)
+        input_his = []
+        for it in history :
+            input_his.append(it.parseList2ListPiece())
+            
+        result = self.llm.simple_call(input=prompt,history=input_his)
+        
+        remove_str = ""
+        if rag:
+            remove_prompt = self.remove_template().format(query,result,context)
+            remove_str = self.llm.simple_call_without_history(input=remove_prompt)
+            print(remove_str)
+            remove_list = json.loads(remove_str)
+            print(remove_list)
+            for it in reversed(remove_list):
+                if len(list_just_doc) > 0:
+                    list_just_doc.pop(int(it))
+            # print(len(list_just_doc))
+            
+        return result,remove_list
+    
+    # 文档的录入
+    def document_in_pdf(self,doc_id):
+        print("document in pdf")
+        return self.online.load_pdf_doc(doc_id)
+        # print("successful load")
+    
+    # 内db查询 
+    def inner_search(self,query:str):
+        # self.make_retrieve_and_rerank(query,7,3)
+        list = self.retriever.retrieval_in_temp_with_para(query=query,topk=7)
+        if len(list)> 3:
+            list = self.reranker.rerank(list,query,3)
+        return list
+    
+    # 以下都是 提示词 template 
     def precise_explanation_template():
         template = "Please provide a answer for this question:{}\n" \
             "Based on the provide context:{}"
@@ -87,7 +147,8 @@ class Pattern:
             "```\nquestion : {}\n" \
             "```\nrelevant context :{}\n"
         return template
-
+    
+    # 将问题列 的text 放入 模板当中形成string
     def generate_context_num(self,num:int,text:List):
         context = "" 
         for i,p in enumerate(text):
@@ -96,18 +157,41 @@ class Pattern:
         return context
         
     def baseline_template(self):
-            template = "You are an accurate and reliable AI assistant able to answer user questions with the help of external documentation, be aware that external documentation may contain noisy factual errors." \
+            template = "You are an accurate and reliable AI assistant able to answer user questions with the help of external documentation and history message, be aware that external documentation may contain noisy factual errors." \
                             "If the information in the document contains the correct answer, you will answer accurately."\
                             "If the information in the document does not contain the answer, you will generate 'There is not enough information in the document, so I cannot answer that question based on the document provided.'" \
                             "If a part of the document contains an error that is not consistent with the facts, please answer 'The document provided has a factual error.'And generate the correct answer." \
-                            "Given relevant external documentation, answer user questions based on it." \
-                            "Three external documents can be answered in descending order of priority by summarizing their information:" \
-                            "Here's the first external documentation:\n---" \
+                            "Given relevant external documentation, answer user questions based on it and history message." \
+                            "user question: \n---" \
                             "{}\n" \
-                            "Here's the second external documentation:" \
-                            "{}\n" \
-                            "Here's the third external documentation:" \
-                            "{}\n" \
-                            "user question：\n---" \
+                            "Some external documents can be answered in descending order of priority by summarizing their information:" \
                             "{}\n"
             return template
+    
+    # paper 粒度的删除 
+    def remove_template(self):
+        template = "Indicate which document does not contribute to the answer" \
+            "Just include a list of int in python format in the output. for example, [0,2] means the first and third paper is no use for answer \n" \
+            "The Question is : {} " \
+            "The generated answer is : {} " \
+            "The document is on below : \n {} \n"
+            
+        return template
+
+    # 意图识别
+    def intention_template(self):
+        template = "Your output can be only yes or no , do not output any other text and Punctuation marks." \
+            "You need to determine the intent of the question : {} " \
+            "If the question is intended to lead to further discussion based on something in the historical question answering, you need to output no.\n" \
+            "If the question is about something new, you need to output yes."
+        return template
+    
+client = QwenLLM()
+retriver = Retriever()
+reranker = Reranker()
+online = pdfLoader(retriver.db,retriver.emb_model)
+# 模式处理
+pattern = Pattern(client,retriever=retriver,reranker=reranker,online=online)
+
+def return_pattern():
+    return pattern

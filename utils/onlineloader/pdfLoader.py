@@ -18,6 +18,7 @@ class pdfLoader:
         self.emb_model = emb_model
         
     def load_pdf_doc(self, arxiv_id:str):
+        print("loading loding docc")
         filename = arxiv_id + ".pdf"
         # self.downLoad(filename=filename)
         loop = asyncio.new_event_loop()
@@ -36,6 +37,7 @@ class pdfLoader:
             ) 
         print("successfully load in the pdf" + filename)
         loop.close()
+        return True
         
     
     async def downLoad(self,arxiv_id):

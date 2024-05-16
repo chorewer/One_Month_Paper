@@ -51,3 +51,13 @@ class Retriever:
         )
         result = [{"ids": search_res["ids"][0][i], "meta": search_res["metadatas"][0][i], "doc": search_res["documents"][0][i]} for i in range(len(search_res["ids"][0]))]
         return result
+    
+    def retrieval_in_temp_with_para(self,query,methods=None,topk=None):
+        search_res = list()
+        query_embeddings = self.emb_model.embed_query(query)
+        search_res = self.temp_collection.query(
+            query_embeddings=[query_embeddings],
+            n_results=topk,
+        )
+        result = [{"ids": search_res["ids"][0][i], "meta": search_res["metadatas"][0][i], "doc": search_res["documents"][0][i]} for i in range(len(search_res["ids"][0]))]
+        return result

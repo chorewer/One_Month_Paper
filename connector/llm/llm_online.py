@@ -78,7 +78,7 @@ class QwenLLM:
         
     def simple_call(self,sys_msg:str = "You are a helpful assitant.",input:str = "",history:List = []) -> str:
         messages = [{'role': 'system', 'content': sys_msg}]
-        if history.count > 0:
+        if len(history) > 0:
             messages = history
         messages.append({'role': 'user', 'content': input})
         response = Generation.call(model="qwen-turbo",
