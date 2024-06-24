@@ -40,7 +40,7 @@ EMBED_DIRECTORY=/root/autodl-tmp/One_Month_Paper/model/bge-large-en-v1.5 您下�
 HOME_DIRECTORY=/media/tj/zhijia-main/One_Month_Paper 本项目根目录的绝对路径
 ```
 2. 在connector/vectorstore/下，运行`python load_chroma.py`,对向量数据库进行初始化
-4. 在项目根目录下 执行 `streamlit run streamlit` 命令
+4. 在项目根目录下 执行 `streamlit run stream_lit.py` 命令
 
 
 # TODO
