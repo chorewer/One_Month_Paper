@@ -2,7 +2,8 @@ import random
 from typing import List
 import streamlit as st
 import numpy as np
-
+import sys
+sys.path.append('./')
 from pattern import return_pattern
 from utils.OneMsg import OneMsg
 

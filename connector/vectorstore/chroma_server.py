@@ -1,8 +1,13 @@
 import chromadb
 from chromadb.config import Settings
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os_persist_directory = os.getenv("PERSIST_DIRECTORY")
 
 class arXivDB:
-    persist_directory = "/root/autodl-tmp/One_Month_Paper/connector/vectorstore/chromadb_data"
+    persist_directory = os_persist_directory
     def __init__(self):
         
         self.client = chromadb.PersistentClient(

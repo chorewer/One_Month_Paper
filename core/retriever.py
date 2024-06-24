@@ -1,11 +1,16 @@
 from langchain.schema import Document
 from connector.vectorstore import chroma_server
 from connector.embedding.embed import bgeEmbeddings
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os_embed_directory = os.getenv("EMBED_DIRECTORY")
 
 class Retriever:
     def __init__(self):
         self.emb_model = bgeEmbeddings(
-            '/root/autodl-tmp/One_Month_Paper/model/bge-large-en-v1.5', 
+            os_embed_directory, 
             batch_size=64,
             max_len=512,
             device='cuda:0'

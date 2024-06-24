@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/root/autodl-tmp/One_Month_Paper')
+# sys.path.append('/root/autodl-tmp/One_Month_Paper')
 import os
 import threading
 import requests

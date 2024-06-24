@@ -1,15 +1,19 @@
-import sys
-sys.path.append('/root/autodl-tmp/One_Month_Paper')
+
 from connector.vectorstore import chroma_server
 import pandas as pd
 from connector.embedding.embed import bgeEmbeddings
 from tqdm import tqdm
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os_embed_directory = os.getenv("EMBED_DIRECTORY")
 if __name__ == "__main__":
     # 读取 CSV 文件
-    df = pd.read_csv('/root/autodl-tmp/One_Month_Paper/connector/vectorstore/data/merged_data.csv')
+    df = pd.read_csv('data/merged_data.csv')
     
     embed_model = bgeEmbeddings(
-        '/root/autodl-tmp/One_Month_Paper/model/bge-large-en-v1.5', 
+        os_embed_directory, 
         batch_size=64,
         max_len=512,
         device='cuda:0'

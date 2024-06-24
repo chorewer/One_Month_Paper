@@ -23,6 +23,17 @@
 └── README.md # 本文件
 ```
 
+# 安装
+1. pip install -r requirements.txt 安装环境
+3. 在项目根目录下新建model文件夹，在其中下载bge-large-en-v1.5和bge-reranker-large模型，文件较大，需要安装git lfs进行拉取
+```
+git clone https://www.modelscope.cn/AI-ModelScope/bge-large-en-v1.5.git
+git clone https://www.modelscope.cn/Xorbits/bge-reranker-large.git
+```
+3. 在项目根目录下复制example.env,并重命名其为.env,配置其中的模型路径等
+2. 运行connector/vectorstore/load_chroma.py,对向量数据库进行初始化
+4. 在项目根目录下 执行 streamlit run streamlit 命令
+
 
 # TODO
 

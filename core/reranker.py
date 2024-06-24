@@ -1,10 +1,15 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os_reranker_directory = os.getenv("RERANKER_DIRECTORY")
 
 class Reranker:
     def __init__(self, device='cuda'):
-        self.rerank_tokenizer = AutoTokenizer.from_pretrained('/root/autodl-tmp/One_Month_Paper/model/bge-reranker-large')
-        self.rerank_model = AutoModelForSequenceClassification.from_pretrained('/root/autodl-tmp/One_Month_Paper/model/bge-reranker-large')\
+        self.rerank_tokenizer = AutoTokenizer.from_pretrained(os_reranker_directory)
+        self.rerank_model = AutoModelForSequenceClassification.from_pretrained(os_reranker_directory)\
             .half().to(device).eval()
         self.device = device
         print('successful load rerank model')
