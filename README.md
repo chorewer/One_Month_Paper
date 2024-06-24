@@ -27,7 +27,7 @@
 
 # 安装
 1. `pip install -r requirements.txt` 安装环境
-3. 在项目根目录下新建model文件夹，在其中下载bge-large-en-v1.5和bge-reranker-large模型，文件较大，需要安装git lfs进行拉取
+2. 在项目根目录下新建model文件夹，在其中下载bge-large-en-v1.5和bge-reranker-large模型，文件较大，需要安装git lfs进行拉取
 ```
 git clone https://www.modelscope.cn/AI-ModelScope/bge-large-en-v1.5.git
 git clone https://www.modelscope.cn/Xorbits/bge-reranker-large.git
@@ -41,10 +41,10 @@ RERANKER_DIRECTORY= /root/autodl-tmp/One_Month_Paper/model/bge-reranker-large �
 EMBED_DIRECTORY=/root/autodl-tmp/One_Month_Paper/model/bge-large-en-v1.5 您下在bge-large模型的绝对路径
 HOME_DIRECTORY=/media/tj/zhijia-main/One_Month_Paper 本项目根目录的绝对路径
 ```
-2. 在connector/vectorstore/下，运行`python load_chroma.py`,对向量数据库进行初始化
-4. 在项目根目录下 执行 `streamlit run stream_lit.py` 命令
+4. 在connector/vectorstore/下，运行`python load_chroma.py`,对向量数据库进行初始化
+5. 在项目根目录下 执行 `streamlit run stream_lit.py` 命令
 
-
+本项目需要python环境中的nltk库有punkt数据，若没有配置过，请参考网上其他教程进行下载
 # TODO
 
 1、加入各种对话模式：禁用RAG只使用多轮对话，针对某篇文章进行RAG ，针对摘要广泛搜索等
