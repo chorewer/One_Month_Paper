@@ -2,8 +2,13 @@ import random
 from typing import List
 import streamlit as st
 import numpy as np
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os_home_directory = os.getenv("HOME_DIRECTORY")
 import sys
-sys.path.append('./')
+sys.path.append(os_home_directory)
 from pattern import return_pattern
 from utils.OneMsg import OneMsg
 

@@ -1,10 +1,18 @@
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os_embed_directory = os.getenv("EMBED_DIRECTORY")
+os_home_directory = os.getenv("HOME_DIRECTORY")
+import sys
+sys.path.append(os_home_directory)
+
 from connector.vectorstore import chroma_server
 import pandas as pd
 from connector.embedding.embed import bgeEmbeddings
 from tqdm import tqdm
-from dotenv import load_dotenv
-import os
+
 
 load_dotenv()
 os_embed_directory = os.getenv("EMBED_DIRECTORY")

@@ -24,15 +24,23 @@
 ```
 
 # 安装
-1. pip install -r requirements.txt 安装环境
+1. `pip install -r requirements.txt` 安装环境
 3. 在项目根目录下新建model文件夹，在其中下载bge-large-en-v1.5和bge-reranker-large模型，文件较大，需要安装git lfs进行拉取
 ```
 git clone https://www.modelscope.cn/AI-ModelScope/bge-large-en-v1.5.git
 git clone https://www.modelscope.cn/Xorbits/bge-reranker-large.git
 ```
-3. 在项目根目录下复制example.env,并重命名其为.env,配置其中的模型路径等
-2. 运行connector/vectorstore/load_chroma.py,对向量数据库进行初始化
-4. 在项目根目录下 执行 streamlit run streamlit 命令
+3. 在项目根目录下复制`example.env`,并重命名其为`.env`,配置其中的模型路径等
+```
+.env文件设置说明：
+DASHSCOPE_API_KEY= 您的QWEN API-KEY
+PERSIST_DIRECTORY=  建议在connector/vectorstore/建立文件夹chromadb_data，将其绝对路径作为保存路径
+RERANKER_DIRECTORY= /root/autodl-tmp/One_Month_Paper/model/bge-reranker-large 您下载bge-reranker模型的绝对路径
+EMBED_DIRECTORY=/root/autodl-tmp/One_Month_Paper/model/bge-large-en-v1.5 您下在bge-large模型的绝对路径
+HOME_DIRECTORY=/media/tj/zhijia-main/One_Month_Paper 本项目根目录的绝对路径
+```
+2. 在connector/vectorstore/下，运行`python load_chroma.py`,对向量数据库进行初始化
+4. 在项目根目录下 执行 `streamlit run streamlit` 命令
 
 
 # TODO
